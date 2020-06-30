@@ -25,33 +25,37 @@ func (l LineOpts) Validate() error {
 	if l.Text == "" {
 		return fmt.Errorf("text is not defined")
 	}
-	if l.ImgWidth == 0 {
-		return fmt.Errorf("ingWidth is not defined")
-	}
-	if l.ImgHeight == 0 {
-		return fmt.Errorf("imgHeight is not defined")
-	}
 	return nil
 }
 
 // Plotter defines struct for project
 type Plotter struct {
-	plot *plot.Plot
+	plot      *plot.Plot
+	imgWidth  float64
+	imgHeight float64
 }
 
 // New provides initialization of the plotter
-func New() (*Plotter, error) {
+func New(imgWidth float64, imgHeight float64) (*Plotter, error) {
 	p, err := plot.New()
 	if err != nil {
 		return nil, err
 	}
+	if imgWidth == 0 {
+		return nil, fmt.Errorf("ingWidth is not defined")
+	}
+	if imgHeight == 0 {
+		return nil, fmt.Errorf("imgHeight is not defined")
+	}
 	return &Plotter{
-		plot: p,
+		imgWidth:  imgWidth,
+		imgHeight: imgHeight,
+		plot:      p,
 	}, nil
 }
 
 // Line provides creating and saving of the line plot
-func (p *Plotter) Line(opts LineOpts) error {
+func (p *Plotter) Line(imageName string, opts ...LineOpts) error {
 	if err := opts.Validate(); err != nil {
 		return err
 	}
@@ -59,15 +63,18 @@ func (p *Plotter) Line(opts LineOpts) error {
 	p.plot.X.Label.Text = opts.XLabel
 	p.plot.Y.Label.Text = opts.YLabel
 	p.plot.Add(plotter.NewGrid())
-	rssLine, err := plotter.NewLine(opts.Data)
-	if err != nil {
-		return fmt.Errorf("unable to create new line: %v", err)
+
+	for _, o := range opts {
+		rssLine, err := plotter.NewLine(o.Data)
+		if err != nil {
+			return fmt.Errorf("unable to create new line: %v", err)
+		}
+		rssLine.LineStyle.Width = vg.Points(1)
+		rssLine.LineStyle.Color = color.RGBA{R: 100, G: 100, B: 0, A: 255}
+		p.plot.Add(rssLine)
 	}
-	rssLine.LineStyle.Width = vg.Points(1)
-	rssLine.LineStyle.Color = color.RGBA{R: 100, G: 100, B: 0, A: 255}
-	p.plot.Add(rssLine)
-	if err := p.plot.Save(vg.Length(opts.ImgWidth), vg.Length(opts.ImgHeight), opts.ImageName); err != nil {
-		return fmt.Errorf("unable to save plot: %s %v", opts.ImageName, err)
+	if err := p.plot.Save(vg.Length(p.imgWidth), vg.Length(p.imgHeight), imageName); err != nil {
+		return fmt.Errorf("unable to save plot: %s %v", imageName, err)
 	}
 	return nil
 }
