@@ -25,6 +25,12 @@ func (l LineOpts) Validate() error {
 	if l.Text == "" {
 		return fmt.Errorf("text is not defined")
 	}
+	if l.ImgWidth == 0 {
+		return fmt.Errorf("ingWidth is not defined")
+	}
+	if l.ImgHeight == 0 {
+		return fmt.Errorf("imgHeight is not defined")
+	}
 	return nil
 }
 
