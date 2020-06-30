@@ -18,6 +18,14 @@ type LineOpts struct {
 	Text     string
 }
 
+// Validate provides validation of the LineOpts
+func (l LineOpts) Validate() error {
+	if l.Text == "" {
+		return fmt.Errorf("text is not defined")
+	}
+	return nil
+}
+
 // Plotter defines struct for project
 type Plotter struct {
 	plot *plot.Plot
@@ -36,6 +44,9 @@ func New() (*Plotter, error) {
 
 // Line provides creating and saving of the line plot
 func (p *Plotter) Line(opts LineOpts) error {
+	if err := opts.Validate(); err != nil {
+		return err
+	}
 	p.plot.Title.Text = opts.Text
 	p.plot.X.Label.Text = opts.XLabel
 	p.plot.Y.Label.Text = opts.YLabel
