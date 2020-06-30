@@ -20,6 +20,11 @@ type LineOpts struct {
 	ImgHeight float64
 }
 
+// LineData defines data and options for line
+type LineData struct {
+	Data plotter.XYs
+}
+
 // Validate provides validation of the LineOpts
 func (l LineOpts) Validate() error {
 	if l.Text == "" {
@@ -55,7 +60,7 @@ func New(imgWidth float64, imgHeight float64) (*Plotter, error) {
 }
 
 // Line provides creating and saving of the line plot
-func (p *Plotter) Line(imageName string, opts ...LineOpts) error {
+func (p *Plotter) Line(opts LineOpts, data ...LineData) error {
 	if err := opts.Validate(); err != nil {
 		return err
 	}
@@ -64,7 +69,7 @@ func (p *Plotter) Line(imageName string, opts ...LineOpts) error {
 	p.plot.Y.Label.Text = opts.YLabel
 	p.plot.Add(plotter.NewGrid())
 
-	for _, o := range opts {
+	for _, o := range data {
 		rssLine, err := plotter.NewLine(o.Data)
 		if err != nil {
 			return fmt.Errorf("unable to create new line: %v", err)
@@ -73,8 +78,8 @@ func (p *Plotter) Line(imageName string, opts ...LineOpts) error {
 		rssLine.LineStyle.Color = color.RGBA{R: 100, G: 100, B: 0, A: 255}
 		p.plot.Add(rssLine)
 	}
-	if err := p.plot.Save(vg.Length(p.imgWidth), vg.Length(p.imgHeight), imageName); err != nil {
-		return fmt.Errorf("unable to save plot: %s %v", imageName, err)
+	if err := p.plot.Save(vg.Length(p.imgWidth), vg.Length(p.imgHeight), opts.ImageName); err != nil {
+		return fmt.Errorf("unable to save plot: %s %v", opts.ImageName, err)
 	}
 	return nil
 }
