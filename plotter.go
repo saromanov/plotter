@@ -11,11 +11,13 @@ import (
 
 // LineOpts defines options for creating line plot
 type LineOpts struct {
-	XLabel   string
-	YLabel   string
-	Data     plotter.XYs
-	Filename string
-	Text     string
+	XLabel    string
+	YLabel    string
+	Data      plotter.XYs
+	ImageName string
+	Text      string
+	ImgWidth  float64
+	ImgHeight float64
 }
 
 // Validate provides validation of the LineOpts
@@ -58,8 +60,8 @@ func (p *Plotter) Line(opts LineOpts) error {
 	rssLine.LineStyle.Width = vg.Points(1)
 	rssLine.LineStyle.Color = color.RGBA{R: 100, G: 100, B: 0, A: 255}
 	p.plot.Add(rssLine)
-	if err := p.plot.Save(500, 500, "test.png"); err != nil {
-		return fmt.Errorf("unable to save plot: %s %v", opts.Filename, err)
+	if err := p.plot.Save(vg.Length(opts.ImgWidth), vg.Length(opts.ImgHeight), opts.ImageName); err != nil {
+		return fmt.Errorf("unable to save plot: %s %v", opts.ImageName, err)
 	}
 	return nil
 }
