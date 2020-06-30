@@ -15,6 +15,7 @@ type LineOpts struct {
 	YLabel   string
 	Data     plotter.XYs
 	Filename string
+	Text     string
 }
 
 // Plotter defines struct for project
@@ -35,7 +36,7 @@ func New() (*Plotter, error) {
 
 // Line provides creating and saving of the line plot
 func (p *Plotter) Line(opts LineOpts) error {
-	p.plot.Title.Text = fmt.Sprintf("Memory Plot of PID %d", 10)
+	p.plot.Title.Text = opts.Text
 	p.plot.X.Label.Text = opts.XLabel
 	p.plot.Y.Label.Text = opts.YLabel
 	p.plot.Add(plotter.NewGrid())
