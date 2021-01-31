@@ -47,7 +47,7 @@ func New(imgWidth float64, imgHeight float64) (*Plotter, error) {
 		return nil, err
 	}
 	if imgWidth == 0 {
-		return nil, fmt.Errorf("ingWidth is not defined")
+		return nil, fmt.Errorf("imgWidth is not defined")
 	}
 	if imgHeight == 0 {
 		return nil, fmt.Errorf("imgHeight is not defined")
@@ -62,7 +62,7 @@ func New(imgWidth float64, imgHeight float64) (*Plotter, error) {
 // Line provides creating and saving of the line plot
 func (p *Plotter) Line(opts LineOpts, data ...LineData) error {
 	if err := opts.Validate(); err != nil {
-		return err
+		return fmt.Errorf("unable to validate line options: %v", err)
 	}
 	p.plot.Title.Text = opts.Text
 	p.plot.X.Label.Text = opts.XLabel
